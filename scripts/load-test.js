@@ -37,10 +37,19 @@ function fire(port, method, path, body) {
           : {},
       },
       (res) => {
-        res.on('data', () => {});
+        let raw = '';
+        res.on('data', (chunk) => {
+          raw += chunk;
+        });
         res.on('end', () => {
           const elapsedMs = Number(process.hrtime.bigint() - started) / 1e6;
-          resolve({ ok: res.statusCode < 500, ms: elapsedMs });
+          let parsed = null;
+          try {
+            parsed = raw ? JSON.parse(raw) : null;
+          } catch {
+            parsed = null;
+          }
+          resolve({ ok: res.statusCode < 500, ms: elapsedMs, body: parsed });
         });
       }
     );
@@ -78,11 +87,12 @@ async function run() {
   async function worker(id) {
     let i = 0;
     while (Date.now() < deadline) {
-      // Mixed workload: create, list, and occasionally delete.
-      record(await fire(port, 'POST', '/todos', { task: `load-${id}-${i}` }));
+      // Mixed workload: create, list, and occasionally delete a real todo.
+      const created = await fire(port, 'POST', '/todos', { task: `load-${id}-${i}` });
+      record(created);
       record(await fire(port, 'GET', '/todos'));
-      if (i % 5 === 0) {
-        record(await fire(port, 'DELETE', `/todos/${i}`));
+      if (i % 5 === 0 && created.body && created.body.id != null) {
+        record(await fire(port, 'DELETE', `/todos/${created.body.id}`));
       }
       i += 1;
     }
