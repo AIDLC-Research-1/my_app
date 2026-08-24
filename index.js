@@ -15,7 +15,7 @@ app.get('/todos', (req, res) => {
 
 // Add a todo
 app.post('/todos', (req, res) => {
-  const { task } = req.body;
+  const task = req.body?.task;
   if (!task || typeof task !== 'string' || task.trim() === '') {
     return res.status(400).json({ error: 'task is required' });
   }
@@ -26,8 +26,11 @@ app.post('/todos', (req, res) => {
 
 // Delete a todo
 app.delete('/todos/:id', (req, res) => {
-  const id = parseInt(req.params.id, 10);
-  const index = todos.findIndex((t) => t.id === id);
+  const id = Number(req.params.id);
+  const index =
+    /^\d+$/.test(req.params.id) && Number.isSafeInteger(id)
+      ? todos.findIndex((t) => t.id === id)
+      : -1;
   if (index === -1) {
     return res.status(404).json({ error: 'Todo not found' });
   }
