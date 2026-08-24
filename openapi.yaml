@@ -1,0 +1,87 @@
+openapi: 3.0.3
+info:
+  title: my_app TODO API
+  version: 1.0.0
+  description: Simple in-memory TODO REST API.
+servers:
+  - url: http://localhost:3000
+paths:
+  /todos:
+    get:
+      summary: List all todos
+      responses:
+        '200':
+          description: Array of todos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Todo'
+    post:
+      summary: Create a todo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewTodo'
+      responses:
+        '201':
+          description: Created todo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /todos/{id}:
+    delete:
+      summary: Delete a todo by id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Deleted
+        '404':
+          description: Todo not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Todo:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - task
+      properties:
+        id:
+          type: integer
+        task:
+          type: string
+    NewTodo:
+      type: object
+      additionalProperties: false
+      required:
+        - task
+      properties:
+        task:
+          type: string
+    Error:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
