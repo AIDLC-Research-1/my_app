@@ -4,7 +4,9 @@
   "description": "Simple Node.js TODO REST API",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "test": "node --test",
+    "lint": "node --check index.js && node --check src/config.js && node --check src/app.js && node --check src/store.js && node --check src/errors.js && node --check src/middleware/index.js && node --check src/routes/todos.js"
   },
   "keywords": [],
   "author": "",

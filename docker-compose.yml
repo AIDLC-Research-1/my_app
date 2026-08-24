@@ -1,0 +1,17 @@
+services:
+  app:
+    build: .
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DATA_FILE=/usr/src/app/data/todos.json
+      # Set API_KEY to require an x-api-key header on requests.
+      - API_KEY=${API_KEY:-}
+    volumes:
+      - todo-data:/usr/src/app/data
+    restart: unless-stopped
+
+volumes:
+  todo-data:
