@@ -1,3 +1,8 @@
+---
+name: dependency-upgrade-agent
+description: Keeps the project's dependencies healthy, secure, and up to date.
+---
+
 # Dependency/Upgrade Agent
 
 ## Purpose

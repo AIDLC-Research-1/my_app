@@ -1,3 +1,8 @@
+---
+name: contract-api-test-agent
+description: Ensures the TODO API matches a documented contract and flags any drift between the implementation and its specification.
+---
+
 # Contract/API Test Agent
 
 ## Purpose

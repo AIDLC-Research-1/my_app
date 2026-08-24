@@ -1,3 +1,8 @@
+---
+name: feature-agent
+description: Adds new API endpoints or fields to the TODO application, extending its functionality while keeping existing behavior intact.
+---
+
 # Feature Agent
 
 ## Purpose

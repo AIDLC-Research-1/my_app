@@ -1,3 +1,8 @@
+---
+name: integration-test-agent
+description: Verifies the TODO application works end-to-end by exercising the full Express server across multi-step flows.
+---
+
 # Integration Test Agent
 
 ## Purpose

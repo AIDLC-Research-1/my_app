@@ -1,3 +1,8 @@
+---
+name: performance-load-test-agent
+description: Measures the TODO application's performance under load and surfaces resource issues in the in-memory store.
+---
+
 # Performance/Load Test Agent
 
 ## Purpose

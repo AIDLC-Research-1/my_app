@@ -1,3 +1,8 @@
+---
+name: dockerization-devops-agent
+description: Makes the TODO application easy to containerize, configure, and continuously integrate.
+---
+
 # Dockerization/DevOps Agent
 
 ## Purpose

@@ -1,3 +1,8 @@
+---
+name: validation-error-handling-agent
+description: Strengthens input validation and standardizes error handling across the TODO application.
+---
+
 # Validation & Error-Handling Agent
 
 ## Purpose
