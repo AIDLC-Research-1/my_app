@@ -21,6 +21,6 @@ USER node
 
 # Port the app listens on (overridable via PORT env var)
 ENV PORT=3000
-EXPOSE 3000
+EXPOSE ${PORT}
 
 CMD ["node", "index.js"]
