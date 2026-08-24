@@ -1,3 +1,8 @@
+---
+name: security-test-agent
+description: Checks the TODO application for common web API vulnerabilities and hardens it against malicious input.
+---
+
 # Security Test Agent
 
 ## Purpose

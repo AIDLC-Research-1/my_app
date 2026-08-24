@@ -1,3 +1,8 @@
+---
+name: auth-agent
+description: Adds authentication and authorization to the TODO application so access to the API and its data is properly controlled.
+---
+
 # Auth Agent
 
 ## Purpose

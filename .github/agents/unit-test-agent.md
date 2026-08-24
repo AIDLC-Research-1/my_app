@@ -1,3 +1,8 @@
+---
+name: unit-test-agent
+description: Writes unit tests for the TODO application's route handlers so their behavior is verified in isolation and regressions are caught early.
+---
+
 # Unit Test Agent
 
 ## Purpose

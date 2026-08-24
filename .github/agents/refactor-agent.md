@@ -1,3 +1,8 @@
+---
+name: refactor-agent
+description: Improves the internal structure of the TODO application without changing its external behavior. Focuses on persistence and code organization.
+---
+
 # Refactor Agent
 
 ## Purpose

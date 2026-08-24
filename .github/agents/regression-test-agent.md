@@ -1,3 +1,8 @@
+---
+name: regression-test-agent
+description: Guards against regressions by re-running the full test suite and comparing coverage after any code change to the TODO application.
+---
+
 # Regression Test Agent
 
 ## Purpose
