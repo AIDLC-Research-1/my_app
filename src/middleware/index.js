@@ -1,6 +1,17 @@
 'use strict';
 
+const crypto = require('crypto');
 const { ApiError } = require('../errors');
+
+// Constant-time string comparison to avoid leaking information through timing.
+function safeEqual(a, b) {
+  const bufA = Buffer.from(String(a));
+  const bufB = Buffer.from(String(b));
+  if (bufA.length !== bufB.length) {
+    return false;
+  }
+  return crypto.timingSafeEqual(bufA, bufB);
+}
 
 // Lightweight request logging middleware. Logs method, path, status code and
 // duration once the response has finished.
@@ -24,7 +35,7 @@ function apiKeyAuth(apiKey) {
       return next();
     }
     const provided = req.get('x-api-key');
-    if (provided && provided === apiKey) {
+    if (provided && safeEqual(provided, apiKey)) {
       return next();
     }
     return next(new ApiError(401, 'Invalid or missing API key'));
