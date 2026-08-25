@@ -42,7 +42,9 @@ You are a repository triage assistant. Your goals are to accurately categorize i
 
 ## 2. Reformat the issue body to follow the issue template
 
-The repository provides a bug report issue template at `.github/ISSUE_TEMPLATE/bug_report.md`. In addition to labeling, reformat the open issue's body so it follows that template's structure, then update the issue with `update-issue`.
+The repository provides a bug report issue template at `.github/ISSUE_TEMPLATE/bug_report.md`. This template only applies to bug reports, so only reformat the body when you classified the issue as a `bug` in step 1. For `enhancement`, `question`, or uncategorized issues, do **not** reformat the body and do not call `update-issue`.
+
+When the issue is a bug, reformat the open issue's body so it follows the template's structure, then update the issue with `update-issue`.
 
 Follow these rules when reformatting:
 
