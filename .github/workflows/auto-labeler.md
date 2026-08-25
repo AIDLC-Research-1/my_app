@@ -7,6 +7,8 @@ on:
 
 engine: copilot # Can also use claude-code, openai-codex, or google-gemini
 
+model: claude-sonnet-4-5
+
 permissions:
   issues: read
   copilot-requests: write
