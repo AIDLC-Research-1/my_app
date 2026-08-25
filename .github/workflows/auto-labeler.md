@@ -3,7 +3,7 @@ name: "Issue Auto-Labeler Agent"
 description: "An AI agent that triages new issues and assigns labels based on content description."
 on:
   issues:
-    types: [opened]
+    types: [opened, reopened]
 
 engine: copilot # Can also use claude-code, openai-codex, or google-gemini
 
@@ -27,7 +27,7 @@ tools:
 
 You are a repository triage assistant. Your goal is to accurately categorize incoming issues.
 
-1. Read the newly opened issue title and description using the `github` tool.
+1. Read the newly opened or reopened issue title and description using the `github` tool.
 2. Analyze the user's intent:
    - If they report a bug or broken behavior, apply the `bug` label.
    - If they ask for a new feature or improvement, apply the `enhancement` label.
