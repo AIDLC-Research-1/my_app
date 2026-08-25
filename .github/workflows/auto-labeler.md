@@ -9,6 +9,7 @@ engine: copilot # Can also use claude-code, openai-codex, or google-gemini
 
 permissions:
   issues: read
+  copilot-requests: write
 
 # Explicitly declare what the agent is allowed to change
 safe-outputs:
