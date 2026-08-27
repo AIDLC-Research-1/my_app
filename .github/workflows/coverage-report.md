@@ -18,6 +18,7 @@ model: claude-sonnet-4-5
 
 permissions:
   contents: read
+  copilot-requests: write
 
 # Do the work by invoking ONLY the coverage-report custom agent.
 imports:
