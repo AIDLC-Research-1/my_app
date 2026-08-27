@@ -13,6 +13,7 @@ on:
 
 permissions:
   contents: read
+  copilot-requests: write
 
 jobs:
   coverage-report:
@@ -35,7 +36,7 @@ jobs:
 
       - name: Run coverage-report agent via Copilot CLI
         env:
-          COPILOT_GITHUB_TOKEN: ${{ secrets.COPILOT_GITHUB_TOKEN }}
+          COPILOT_GITHUB_TOKEN: ${{ secrets.COPILOT_GITHUB_TOKEN || github.token }}
         run: |
           copilot \
             --agent coverage-report \
