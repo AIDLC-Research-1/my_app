@@ -36,10 +36,16 @@ tools:
     - "npm:*"
     - "node:*"
 
-# The agent runs `docker build` and `docker save` itself; the only remaining
-# workflow step uploads the tarball the agent produced, since an Actions
-# artifact cannot be produced by the agent directly.
+# The workflow ensures a tarball exists before uploading it. If the agent did
+# not leave behind the expected image or tarball, a small fallback step builds
+# and exports the image in the job environment so the artifact upload succeeds.
 post-steps:
+  - name: Ensure built image tarball exists
+    run: |
+      if [ ! -f my_app-image.tar ]; then
+        docker image inspect my_app:latest >/dev/null 2>&1 || docker build -t my_app:latest .
+        docker save my_app:latest -o my_app-image.tar
+      fi
   - name: Upload built image artifact
     uses: actions/upload-artifact@v7.0.1
     with:
@@ -52,8 +58,8 @@ post-steps:
 # Build Docker Image via Agent
 
 This workflow's only agent is the imported **`docker-image-builder`** agent. The
-agent performs the build itself; the single post-step only uploads the tarball
-the agent produced, because an Actions artifact cannot be emitted by the agent.
+agent should perform the build itself, and the post-steps ensure the expected
+`my_app-image.tar` exists before uploading it as an artifact.
 
 Follow the imported agent's instructions to:
 
@@ -67,6 +73,10 @@ Follow the imported agent's instructions to:
    - `docker save my_app:latest -o my_app-image.tar`
 4. Verify the image and tarball exist (`docker images my_app:latest`, `ls -l
    my_app-image.tar`) and report the image reference, ID, and size.
+
+If the agent does not leave behind the expected image tarball, the workflow
+will rebuild and export `my_app:latest` in a fallback post-step before the
+artifact upload runs.
 
 Do not modify application code, tests, dependencies, or the `Dockerfile`, and do
 not push to any registry. If the build fails, report the exact failing step and

@@ -900,6 +900,12 @@ jobs:
           if [ ! -f /tmp/gh-aw/agent_output.json ]; then
             echo '{"items":[]}' > /tmp/gh-aw/agent_output.json
           fi
+      - name: Ensure built image tarball exists
+        run: |
+          if [ ! -f my_app-image.tar ]; then
+            docker image inspect my_app:latest >/dev/null 2>&1 || docker build -t my_app:latest .
+            docker save my_app:latest -o my_app-image.tar
+          fi
       - name: Upload built image artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
