@@ -43,3 +43,11 @@ jobs:
             --allow-all-tools \
             --log-level info \
             -p "Run the coverage-report agent defined in .github/agents/coverage-report.agent.md. Follow its instructions to run the test suite with coverage and print the full report to the console. Do not create an issue."
+
+      - name: Upload coverage report artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+          if-no-files-found: warn
