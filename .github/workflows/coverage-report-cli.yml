@@ -1,0 +1,44 @@
+name: Coverage Report (Copilot CLI)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "index.js"
+      - "test/**"
+      - "package.json"
+      - "package-lock.json"
+
+permissions:
+  contents: read
+
+jobs:
+  coverage-report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install project dependencies
+        run: npm ci
+
+      - name: Install GitHub Copilot CLI
+        run: npm install -g @github/copilot
+
+      - name: Run coverage-report agent via Copilot CLI
+        env:
+          COPILOT_GITHUB_TOKEN: ${{ secrets.COPILOT_GITHUB_TOKEN }}
+        run: |
+          copilot \
+            --agent coverage-report \
+            --allow-all-tools \
+            --log-level info \
+            -p "Run the coverage-report agent defined in .github/agents/coverage-report.agent.md. Follow its instructions to run the test suite with coverage and print the full report to the console. Do not create an issue."
