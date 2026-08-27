@@ -15,6 +15,7 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY package.json ./
 COPY index.js ./
+COPY public ./public
 
 # Run as the built-in non-root user for better security
 USER node

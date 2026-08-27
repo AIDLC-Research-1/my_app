@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TODO App</title>
+    <meta
+      name="description"
+      content="A small React interface for the TODO REST API."
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <!--
+      Vendored React (UMD builds) so the UI works with no build step and no
+      runtime CDN dependency. React must load before ReactDOM, and htm gives us
+      JSX-like syntax without a compiler. See /public/vendor.
+    -->
+    <script src="/vendor/react.production.min.js"></script>
+    <script src="/vendor/react-dom.production.min.js"></script>
+    <script src="/vendor/htm.umd.js"></script>
+    <script src="/app.js"></script>
+  </body>
+</html>

@@ -1,6 +1,7 @@
 # my_app – Node.js TODO Application
 
-A simple REST API server for managing a TODO list.
+A simple REST API server for managing a TODO list, bundled with a small React
+web UI for using the API from the browser.
 
 ## Prerequisites
 
@@ -22,6 +23,22 @@ The server listens on port **3000** by default. Override with the `PORT` environ
 ```bash
 PORT=8080 node index.js
 ```
+
+## Web UI
+
+Once the server is running, open <http://localhost:3000/> in your browser to use
+the bundled React interface. The landing page provides forms for the API so you
+can:
+
+- **Add** a task (`POST /todos`)
+- **View** the current list of tasks (`GET /todos`)
+- **Delete** a task (`DELETE /todos/:id`)
+
+The UI is a single-page React application served as static files from the
+[`public/`](./public) directory. React, ReactDOM and
+[htm](https://github.com/developit/htm) are vendored as UMD builds in
+[`public/vendor/`](./public/vendor) (React `18.3.1`, htm `3.1.1`), so the page
+works with **no build step** and no runtime CDN dependency.
 
 ## Running with Docker
 

@@ -1,9 +1,15 @@
 'use strict';
 
+const path = require('path');
 const express = require('express');
 
 const app = express();
 app.use(express.json());
+
+// Serve the React single-page UI (and its vendored assets) from ./public.
+// Static files are matched first; unmatched paths fall through to the API
+// routes below, so requests like GET /todos are unaffected.
+app.use(express.static(path.join(__dirname, 'public')));
 
 let todos = [];
 let nextId = 1;
