@@ -18,6 +18,136 @@
 const { useState, useEffect, useCallback } = React;
 const html = htm.bind(React.createElement);
 
+/*
+ * Thin wrapper around the TODO REST API. Each method resolves with the parsed
+ * response body (where applicable) and throws an Error with a user-facing
+ * message on failure.
+ */
+const todosApi = {
+  async list() {
+    const res = await fetch('/todos');
+    if (!res.ok) {
+      throw new Error('Failed to load todos (' + res.status + ')');
+    }
+    return res.json();
+  },
+  async add(task) {
+    const res = await fetch('/todos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ task }),
+    });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body.error || 'Failed to add todo');
+    }
+    return res.json();
+  },
+  async remove(id) {
+    const res = await fetch('/todos/' + id, { method: 'DELETE' });
+    if (res.status !== 204) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body.error || 'Failed to delete todo');
+    }
+  },
+};
+
+function Hero() {
+  return html`
+    <header className="hero">
+      <h1 className="hero__title">📝 TODO App</h1>
+      <p className="hero__subtitle">
+        A tiny React interface for the TODO REST API. Add tasks, review your
+        list, and remove the ones you have finished.
+      </p>
+    </header>
+  `;
+}
+
+function TodoForm({ task, submitting, onTaskChange, onSubmit }) {
+  return html`
+    <section aria-labelledby="add-heading">
+      <h2 id="add-heading" className="panel__heading">Add a task</h2>
+      <form className="todo-form" onSubmit=${onSubmit}>
+        <label className="visually-hidden" htmlFor="task-input">Task</label>
+        <input
+          id="task-input"
+          className="todo-form__input"
+          type="text"
+          placeholder="e.g. Buy groceries"
+          value=${task}
+          onChange=${(event) => onTaskChange(event.target.value)}
+          disabled=${submitting}
+        />
+        <button
+          className="todo-form__button"
+          type="submit"
+          disabled=${submitting}
+        >
+          ${submitting ? 'Adding…' : 'Add'}
+        </button>
+      </form>
+    </section>
+  `;
+}
+
+function TodoItem({ todo, onDelete }) {
+  return html`
+    <li className="todo-list__item" key=${todo.id}>
+      <span className="todo-list__task">${todo.task}</span>
+      <button
+        className="todo-list__delete"
+        type="button"
+        aria-label=${'Delete ' + todo.task}
+        onClick=${() => onDelete(todo.id)}
+      >
+        Delete
+      </button>
+    </li>
+  `;
+}
+
+function TodoList({ todos, loading, onRefresh, onDelete }) {
+  return html`
+    <section aria-labelledby="list-heading">
+      <div className="panel__list-header">
+        <h2 id="list-heading" className="panel__heading">Your tasks</h2>
+        <button
+          className="link-button"
+          type="button"
+          onClick=${onRefresh}
+          disabled=${loading}
+        >
+          Refresh
+        </button>
+      </div>
+
+      ${loading
+        ? html`<p className="muted">Loading…</p>`
+        : todos.length === 0
+          ? html`<p className="muted">No tasks yet. Add your first one above!</p>`
+          : html`
+              <ul className="todo-list">
+                ${todos.map(
+                  (todo) => html`<${TodoItem} todo=${todo} onDelete=${onDelete} key=${todo.id} />`
+                )}
+              </ul>
+            `}
+    </section>
+  `;
+}
+
+function Footer() {
+  return html`
+    <footer className="footer">
+      <p>
+        Powered by the same Express server that hosts the API —
+        <code>GET/POST /todos</code> and <code>DELETE /todos/:id</code>.
+      </p>
+    </footer>
+  `;
+}
+
 function App() {
   const [todos, setTodos] = useState([]);
   const [task, setTask] = useState('');
@@ -29,11 +159,7 @@ function App() {
     setLoading(true);
     setError('');
     try {
-      const res = await fetch('/todos');
-      if (!res.ok) {
-        throw new Error('Failed to load todos (' + res.status + ')');
-      }
-      setTodos(await res.json());
+      setTodos(await todosApi.list());
     } catch (err) {
       setError(err.message);
     } finally {
@@ -55,16 +181,7 @@ function App() {
     setSubmitting(true);
     setError('');
     try {
-      const res = await fetch('/todos', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ task: trimmed }),
-      });
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body.error || 'Failed to add todo');
-      }
-      const created = await res.json();
+      const created = await todosApi.add(trimmed);
       setTodos((current) => [...current, created]);
       setTask('');
     } catch (err) {
@@ -77,11 +194,7 @@ function App() {
   const deleteTodo = async (id) => {
     setError('');
     try {
-      const res = await fetch('/todos/' + id, { method: 'DELETE' });
-      if (res.status !== 204) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body.error || 'Failed to delete todo');
-      }
+      await todosApi.remove(id);
       setTodos((current) => current.filter((todo) => todo.id !== id));
     } catch (err) {
       setError(err.message);
@@ -90,85 +203,27 @@ function App() {
 
   return html`
     <div className="app">
-      <header className="hero">
-        <h1 className="hero__title">📝 TODO App</h1>
-        <p className="hero__subtitle">
-          A tiny React interface for the TODO REST API. Add tasks, review your
-          list, and remove the ones you have finished.
-        </p>
-      </header>
+      <${Hero} />
 
       <main className="panel">
-        <section aria-labelledby="add-heading">
-          <h2 id="add-heading" className="panel__heading">Add a task</h2>
-          <form className="todo-form" onSubmit=${addTodo}>
-            <label className="visually-hidden" htmlFor="task-input">Task</label>
-            <input
-              id="task-input"
-              className="todo-form__input"
-              type="text"
-              placeholder="e.g. Buy groceries"
-              value=${task}
-              onChange=${(event) => setTask(event.target.value)}
-              disabled=${submitting}
-            />
-            <button
-              className="todo-form__button"
-              type="submit"
-              disabled=${submitting}
-            >
-              ${submitting ? 'Adding…' : 'Add'}
-            </button>
-          </form>
-        </section>
+        <${TodoForm}
+          task=${task}
+          submitting=${submitting}
+          onTaskChange=${setTask}
+          onSubmit=${addTodo}
+        />
 
         ${error && html`<p className="alert" role="alert">${error}</p>`}
 
-        <section aria-labelledby="list-heading">
-          <div className="panel__list-header">
-            <h2 id="list-heading" className="panel__heading">Your tasks</h2>
-            <button
-              className="link-button"
-              type="button"
-              onClick=${loadTodos}
-              disabled=${loading}
-            >
-              Refresh
-            </button>
-          </div>
-
-          ${loading
-            ? html`<p className="muted">Loading…</p>`
-            : todos.length === 0
-              ? html`<p className="muted">No tasks yet. Add your first one above!</p>`
-              : html`
-                  <ul className="todo-list">
-                    ${todos.map(
-                      (todo) => html`
-                        <li className="todo-list__item" key=${todo.id}>
-                          <span className="todo-list__task">${todo.task}</span>
-                          <button
-                            className="todo-list__delete"
-                            type="button"
-                            aria-label=${'Delete ' + todo.task}
-                            onClick=${() => deleteTodo(todo.id)}
-                          >
-                            Delete
-                          </button>
-                        </li>
-                      `
-                    )}
-                  </ul>
-                `}
-        </section>
+        <${TodoList}
+          todos=${todos}
+          loading=${loading}
+          onRefresh=${loadTodos}
+          onDelete=${deleteTodo}
+        />
       </main>
 
-      <footer className="footer">
-        <p>
-          Powered by the same Express server that hosts the API —
-          <code>GET/POST /todos</code> and <code>DELETE /todos/:id</code>.
-        </p>
-      </footer>
+      <${Footer} />
     </div>
   `;
 }
