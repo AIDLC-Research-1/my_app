@@ -8,6 +8,7 @@ permissions:
   contents: read               # Highly secure; reads by default
   issues: read
   pull-requests: read
+  copilot-requests: write      # Use GitHub Actions token-based inference (no PAT secret needed)
 tools:
   github:
   edit:
